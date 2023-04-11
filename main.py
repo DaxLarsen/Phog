@@ -1,41 +1,40 @@
-import pygame
-import timer
-import random
-import sys
+import pygame, timer, random, sys
+from settings import *
+from level import Level
 
-screenx = 1200
-screeny = 900
-fps = 100
-ani = 4
-x = 0
-y = 0
-screen = pygame.display.set_mode([screenx, screeny])
+
+pygame.init()
+screen = pygame.display.set_mode([screen_width, screen_height])
+clock = pygame.time.Clock()
+level = Level(level_map,screen)
 pygame.display.set_caption("Phog")
 icon = pygame.image.load("H:\CP2/phog/Phogicon.png")
 pygame.display.set_icon(icon)
-pygame.init()
 pygame.font.init()
+font = pygame.font.Font('H:\CP2/phog/Gloria_Hallelujah/GloriaHallelujah-Regular.ttf', 48)
+
+
+"""for row_index,row in enumerate(layout):
+    for col_index,cell in enumerate(row):
+        x = col_index * tile_size
+        y = row_index * tile_size
+
+        if cell = 'X':
+            tile = Tile((x,y),tile_size)
+            self.tiles.add(tile)"""
+
+
 main = True
 
 while main:
-    #Create Backdrop Color
-    screen.fill(0,0,0)
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            try:
-                sys.exit()
-            finally:
-                main = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == ord('q'):
-                pygame.quit()
-                try:
-                    sys.exit()
-                finally:
-                    main = False
-
+            sys.exit()
+        
+    #Create Backdrop Color
+    screen.fill('black')
+    level.run()
 
     pygame.display.update()
-    pygame.display.flip()
+    clock.tick(60)
