@@ -15,11 +15,15 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0,0)
         self.speed = 8
         self.gravity = 0.8
-        self.jump_speed = -16
+        self.jump_speed = -21
 
         # player status
         self.status = 'idle'
         self.facing_right = True
+        self.on_ground = False
+        self.on_ceiling = False
+        self.on_left = False
+        self.on_right = False
 
     def import_character_assests(self):
         character_path = 'H:\CP2/phog/character/'
@@ -43,6 +47,20 @@ class Player(pygame.sprite.Sprite):
         else:
             flipped_image = pygame.transform.flip(image,True,False)
             self.image = flipped_image
+        
+        # set the rect
+        if self.on_ground and self.on_right:
+            self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
+        elif self.on_ground and self.on_left:
+            self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+        elif self.on_ground:
+            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
+        if self.on_ceiling and self.on_right:
+            self.rect = self.image.get_rect(topright = self.rect.topright)
+        elif self.on_ceiling and self.on_left:
+            self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        elif self.on_ceiling:
+            self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -57,7 +75,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] and self.on_ground:
             self.jump()
 
     def get_status(self):
