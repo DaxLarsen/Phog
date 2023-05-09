@@ -1,5 +1,5 @@
 import pygame
-from tiles import Tile
+from tiles import Tile, Bounce
 from settings import tile_size, screen_width
 from player import Player
 
@@ -14,6 +14,7 @@ class Level:
         
     def setup_level(self,layout,):
         self.tiles = pygame.sprite.Group()
+        self.bounce = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
 
         for row_index,row in enumerate(layout):
@@ -27,6 +28,9 @@ class Level:
                 if cell == 'P':
                     player_sprite = Player((x,y + 32))
                     self.player.add(player_sprite)
+                if cell == 'B':
+                    bounce = Bounce((x,y),tile_size)
+                    self.bounce.add(bounce)
 
     def scoll_x(self):
         player = self.player.sprite
@@ -57,6 +61,16 @@ class Level:
                     player.rect.right = sprite.rect.left
                     player.on_right = True
                     self.current_x = player.rect.right
+        for sprite in self.bounce.sprites():
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.x < 0:
+                    player.rect.left = sprite.rect.right
+                    player.on_left = True
+                    self.current_x = player.rect.left
+                elif player.direction.x > 0:
+                    player.rect.right = sprite.rect.left
+                    player.on_right = True
+                    self.current_x = player.rect.right
 
         if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
             player.on_left = False
@@ -73,14 +87,36 @@ class Level:
                     player.rect.bottom = sprite.rect.top
                     player.direction.y = 0
                     player.on_ground = True
+                    player.jump_count = False
                 elif player.direction.y < 0:
                     player.rect.top = sprite.rect.bottom
                     player.direction.y = 0
                     player.on_ceiling = True
-        if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
-            player.on_ground = False
-        if player.on_ceiling and player.direction.y > 0:
-            player.on_ceiling = False
+            if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+                player.on_ground = False
+                player.jump_count = False
+            if player.on_ceiling and player.direction.y > 0:
+                player.on_ceiling = False
+                player.jump_count = False
+                
+        for sprite in self.bounce.sprites():
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.y > 0:
+                    player.rect.bottom = sprite.rect.top
+                    player.direction.y = 0
+                    player.on_ground = True
+                    player.jump_count = True
+                elif player.direction.y < 0:
+                    player.rect.top = sprite.rect.bottom
+                    player.direction.y = 0
+                    player.on_ceiling = True
+                    player.jump_count = False
+            if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+                player.on_ground = False
+                player.jump_count = False
+            if player.on_ceiling and player.direction.y > 0:
+                player.on_ceiling = False
+                player.jump_count = False
             
     def run(self):
 
@@ -88,6 +124,10 @@ class Level:
         self.tiles.update(self.world_shift)
         self.tiles.draw(self.display_surface)
         self.scoll_x()
+
+        #bounce tiles
+        self.bounce.update(self.world_shift)
+        self.bounce.draw(self.display_surface)
 
         # player
         self.player.update()
