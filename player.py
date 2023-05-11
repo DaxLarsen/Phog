@@ -24,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ceiling = False
         self.on_left = False
         self.on_right = False
+        self.jump_count = False
 
     def import_character_assests(self):
         character_path = 'H:\CP2/phog/character/'
@@ -75,7 +76,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
-        if keys[pygame.K_UP] and self.on_ground:
+        if keys[pygame.K_UP] and self.on_ground or self.jump_count :
             self.jump()
 
     def get_status(self):
@@ -100,3 +101,4 @@ class Player(pygame.sprite.Sprite):
         self.get_input()
         self.get_status()
         self.animate()
+
