@@ -1,6 +1,6 @@
 import pygame
 from tiles import Tile, Bounce, Half
-from settings import tile_size, screen_width
+from settings import tile_size, screen_width,screen_height
 from player import Player
 
 class Level:
@@ -150,14 +150,20 @@ class Level:
             if player.on_ceiling and player.direction.y > 0:
                 player.on_ceiling = False
                 player.jump_count = False
+    
+    def death(self):
+        player = self.player.sprite
+        if player.direction.y > 50 and player.direction.y < 51:
+            image = pygame.image.load("H:\CP2/phog/character/dead.png")
             
+        
+
     def run(self):
 
         # level tiles
         self.tiles.update(self.world_shift)
         self.tiles.draw(self.display_surface)
         self.scoll_x()
-
         # bounce tiles
         self.bounce.update(self.world_shift)
         self.bounce.draw(self.display_surface)
@@ -170,4 +176,6 @@ class Level:
         self.player.update()
         self.horizontal_movement_collision()
         self.vertical_movement_collision()
+        self.death()
         self.player.draw(self.display_surface)
+
