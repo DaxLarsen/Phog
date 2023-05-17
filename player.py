@@ -79,6 +79,7 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_UP] and self.on_ground or self.jump_count :
             self.jump()
 
+
     def get_status(self):
         if self.direction.y < 0:
             self.status = 'jump'
@@ -101,4 +102,5 @@ class Player(pygame.sprite.Sprite):
         self.get_input()
         self.get_status()
         self.animate()
+
 
