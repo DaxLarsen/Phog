@@ -1,6 +1,6 @@
-import pygame
+import pygame, sys
 from tiles import Tile, Bounce, Half
-from settings import tile_size, screen_width,screen_height
+from settings import tile_size, screen_width, screen_height
 from player import Player
 
 class Level:
@@ -65,6 +65,7 @@ class Level:
                     player.rect.right = sprite.rect.left
                     player.on_right = True
                     self.current_x = player.rect.right
+
         for sprite in self.bounce.sprites():
             if sprite.rect.colliderect(player.rect):
                 if player.direction.x < 0:
@@ -154,9 +155,10 @@ class Level:
     def death(self):
         player = self.player.sprite
         if player.direction.y > 50 and player.direction.y < 51:
-            image = pygame.image.load("H:\CP2/phog/character/dead.png")
+            print("You died thanks for playing")
+            pygame.quit
+            sys.exit()
             
-        
 
     def run(self):
 
@@ -178,4 +180,5 @@ class Level:
         self.vertical_movement_collision()
         self.death()
         self.player.draw(self.display_surface)
+
 
